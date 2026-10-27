@@ -1,0 +1,25 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      DB_HOST: sqlserver
+      DB_PORT: ${DB_PORT:-1433}
+      DB_NAME: ${DB_NAME:?Define DB_NAME en back/.env}
+      DB_USER: ${DB_USER:?Define DB_USER en back/.env}
+      DB_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en back/.env}
+      DB_TRUST_SERVER_CERTIFICATE: ${DB_TRUST_SERVER_CERTIFICATE:-false}
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en back/.env}
+    ports:
+      - "127.0.0.1:5159:8080"
+    networks:
+      - sqlserver
+    restart: unless-stopped
+
+networks:
+  sqlserver:
+    name: sql_server_default
+    external: true

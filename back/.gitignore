@@ -1,0 +1,14 @@
+bin/
+obj/
+artifacts/
+.vs/
+*.user
+*.suo
+.env
+.env.*
+!.env.example
+
+# Certificados y secretos de usuario
+*.pfx
+*.pem
+secrets.json

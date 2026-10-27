@@ -1,0 +1,115 @@
+@DireccionApi = http://localhost:5159
+@IdUsuario = D5CE2D40-9E2C-4116-A25F-5AD7BD399BA2
+# Los ids de rol se obtienen de GET /api/roles y cambian en cada entorno.
+@IdRolAdministradorSistema = 0F42C250-C435-4BFD-998D-D95E49E92A25
+@IdRolAdministradorUdae = 497C5DC0-EADE-4B7F-A2B0-80DD8D53E079
+@IdRolAdministradorConsejo = B8A75E25-5D41-4809-B0EF-F1CA6C1F56A0
+@IdRolAdministradorDespacho = C46409F6-7E1E-48E9-89A3-71B55230BAF5
+@IdRolConsulta = 9ACCF705-74A5-476A-9EAA-AC1F5D54C89F
+@IdRolReportes = 57AEFD2B-99D9-4133-B363-736D716260AD
+
+### Listar usuarios
+GET {{DireccionApi}}/api/usuarios
+Accept: application/json
+
+###
+
+### Consultar un usuario
+GET {{DireccionApi}}/api/usuarios/{{IdUsuario}}
+Accept: application/json
+
+### Crear un usuario sin roles
+POST {{DireccionApi}}/api/usuarios
+Content-Type: application/json
+
+{
+  "primerNombre": "Ana",
+  "segundoNombre": "María",
+  "primerApellido": "Gómez",
+  "segundoApellido": "Pérez",
+  "correoElectronico": "ana.gomez@example.com",
+  "contrasena": "ClaveSegura123"
+}
+
+### Crear un usuario con roles
+POST {{DireccionApi}}/api/usuarios
+Content-Type: application/json
+
+{
+  "primerNombre": "Luis",
+  "primerApellido": "Ramírez",
+  "correoElectronico": "luis.ramirez@example.com",
+  "contrasena": "ClaveSegura123",
+  "roles": [
+    "{{IdRolConsulta}}",
+    "{{IdRolReportes}}"
+  ]
+}
+
+### Actualizar un usuario (sin tocar roles)
+PUT {{DireccionApi}}/api/usuarios/{{IdUsuario}}
+Content-Type: application/json
+
+{
+  "primerNombre": "Ana",
+  "segundoNombre": "María",
+  "primerApellido": "Gómez",
+  "segundoApellido": "Pérez",
+  "correoElectronico": "ana.gomez@example.com"
+}
+
+### Actualizar un usuario y reemplazar sus roles
+PUT {{DireccionApi}}/api/usuarios/{{IdUsuario}}
+Content-Type: application/json
+
+{
+  "primerNombre": "Ana",
+  "segundoNombre": "María",
+  "primerApellido": "Gómez",
+  "segundoApellido": "Pérez",
+  "correoElectronico": "ana.gomez@example.com",
+  "roles": [
+    "{{IdRolConsulta}}",
+    "{{IdRolReportes}}"
+  ]
+}
+
+### Desactivar un usuario
+PATCH {{DireccionApi}}/api/usuarios/{{IdUsuario}}/activo/false
+Accept: application/json
+
+### Activar un usuario
+PATCH {{DireccionApi}}/api/usuarios/{{IdUsuario}}/activo/true
+Accept: application/json
+
+### Reemplazar los roles de un usuario
+PUT {{DireccionApi}}/api/usuarios/{{IdUsuario}}/roles
+Content-Type: application/json
+
+{
+  "roles": [
+    "{{IdRolConsulta}}",
+    "{{IdRolReportes}}"
+  ]
+}
+
+### Listar roles
+GET {{DireccionApi}}/api/roles
+Accept: application/json
+
+### Crear un rol
+POST {{DireccionApi}}/api/roles
+Content-Type: application/json
+
+{
+  "nombre": "Rol Temporal",
+  "descripcion": "Rol de prueba."
+}
+
+### Desactivar un rol (los roles del sistema responden 409)
+PATCH {{DireccionApi}}/api/roles/{{IdRolConsulta}}/activo/false
+Accept: application/json
+
+### Activar un rol
+PATCH {{DireccionApi}}/api/roles/{{IdRolConsulta}}/activo/true
+Accept: application/json

@@ -1,0 +1,9 @@
+.env
+.env.*
+.git/
+.vs/
+bin/
+obj/
+artifacts/
+*.user
+*.suo
