@@ -25,16 +25,30 @@ public sealed class UsuariosController : ControllerBase
     }
 
     /// <summary>
-    /// Lista todos los usuarios, incluidos los desactivados.
+    /// Lista los usuarios paginados, incluidos los desactivados.
     /// </summary>
+    /// <param name="consulta">Filtros y paginación solicitados.</param>
     /// <param name="tokenCancelacion">Token para cancelar la operación.</param>
-    /// <returns>La lista de usuarios.</returns>
+    /// <returns>La página de usuarios y los totales del listado.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<UsuarioResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<UsuarioResponse>>> Listar(CancellationToken tokenCancelacion)
+    [ProducesResponseType(typeof(UsuariosPaginadosResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<UsuariosPaginadosResponse>> Listar(
+        [FromQuery] ListarUsuariosQuery consulta,
+        CancellationToken tokenCancelacion)
     {
-        var usuarios = await _servicio.ObtenerTodosAsync(tokenCancelacion);
-        return Ok(usuarios.Select(ConvertirRespuesta));
+        var resultado = await _servicio.ObtenerPaginadosAsync(consulta, tokenCancelacion);
+        var respuesta = new UsuariosPaginadosResponse(
+            resultado.Usuarios.Select(ConvertirRespuesta).ToList(),
+            resultado.Pagina,
+            resultado.Tamano,
+            resultado.Total,
+            resultado.TotalPaginas,
+            resultado.TotalUsuarios,
+            resultado.TotalActivos,
+            resultado.TotalInactivos);
+
+        return Ok(respuesta);
     }
 
     /// <summary>

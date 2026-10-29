@@ -12,6 +12,8 @@ namespace Runpd.Api.Features.Usuarios;
 /// </summary>
 public sealed class UsuariosService
 {
+    private const string CollationBusqueda = "Latin1_General_CI_AI";
+
     private readonly RunpdDbContext _contexto;
     private readonly IPasswordHasher<Usuario> _hasherContrasena;
 
@@ -27,18 +29,93 @@ public sealed class UsuariosService
     }
 
     /// <summary>
-    /// Obtiene todos los usuarios con sus roles, incluidos los desactivados.
+    /// Obtiene una página de usuarios con sus roles, aplicando búsqueda y filtro por estado.
     /// </summary>
+    /// <param name="consulta">Filtros y paginación solicitados.</param>
     /// <param name="tokenCancelacion">Token para cancelar la operación.</param>
-    /// <returns>La lista de usuarios ordenada por identificador.</returns>
-    public async Task<List<Usuario>> ObtenerTodosAsync(CancellationToken tokenCancelacion)
+    /// <returns>La página de usuarios y los totales del listado.</returns>
+    public async Task<UsuariosPaginadosResultado> ObtenerPaginadosAsync(
+        ListarUsuariosQuery consulta,
+        CancellationToken tokenCancelacion)
     {
-        return await _contexto.Usuarios
-            .AsNoTracking()
+        var consultaUsuarios = _contexto.Usuarios.AsNoTracking();
+
+        // Paso 1: filtrar por estado activo o inactivo.
+        if (consulta.Estado == EstadoUsuarioFiltro.Activos)
+        {
+            consultaUsuarios = consultaUsuarios.Where(usuario => usuario.Activo);
+        }
+        else if (consulta.Estado == EstadoUsuarioFiltro.Inactivos)
+        {
+            consultaUsuarios = consultaUsuarios.Where(usuario => !usuario.Activo);
+        }
+
+        // Paso 2: cada palabra debe coincidir con algún dato del usuario.
+        // La colación mantiene la búsqueda sin distinguir mayúsculas ni tildes.
+        var terminos = (consulta.Busqueda ?? string.Empty)
+            .Split(
+                (char[]?)null,
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        foreach (var termino in terminos)
+        {
+            consultaUsuarios = consultaUsuarios.Where(usuario =>
+                EF.Functions.Collate(usuario.PrimerNombre, CollationBusqueda)
+                    .Contains(termino)
+                || (usuario.SegundoNombre != null
+                    && EF.Functions.Collate(usuario.SegundoNombre, CollationBusqueda)
+                        .Contains(termino))
+                || EF.Functions.Collate(usuario.PrimerApellido, CollationBusqueda)
+                    .Contains(termino)
+                || (usuario.SegundoApellido != null
+                    && EF.Functions.Collate(usuario.SegundoApellido, CollationBusqueda)
+                        .Contains(termino))
+                || EF.Functions.Collate(usuario.CorreoElectronico, CollationBusqueda)
+                    .Contains(termino)
+                || usuario.Roles.Any(asignacion =>
+                    EF.Functions.Collate(asignacion.Rol.Nombre, CollationBusqueda)
+                        .Contains(termino)));
+        }
+
+        // Paso 3: contar el resultado filtrado y resumir los totales globales.
+        var total = await consultaUsuarios.CountAsync(tokenCancelacion);
+        var resumen = await _contexto.Usuarios
+            .GroupBy(_ => 1)
+            .Select(grupo => new
+            {
+                Total = grupo.Count(),
+                Activos = grupo.Count(usuario => usuario.Activo)
+            })
+            .SingleOrDefaultAsync(tokenCancelacion);
+
+        var totalUsuarios = resumen?.Total ?? 0;
+        var totalActivos = resumen?.Activos ?? 0;
+        var totalPaginas = total == 0
+            ? 0
+            : (int)Math.Ceiling(total / (double)consulta.Tamano);
+
+        // Paso 4: obtener la página solicitada, de la más reciente a la más antigua.
+        var usuarios = await consultaUsuarios
             .Include(usuario => usuario.Roles)
             .ThenInclude(asignacion => asignacion.Rol)
-            .OrderBy(usuario => usuario.Id)
+            .OrderByDescending(usuario => usuario.FechaCreacionUtc)
+            .ThenBy(usuario => usuario.Id)
+            .Skip((consulta.Pagina - 1) * consulta.Tamano)
+            .Take(consulta.Tamano)
+            .AsSplitQuery()
             .ToListAsync(tokenCancelacion);
+
+        return new UsuariosPaginadosResultado(
+            usuarios,
+            consulta.Pagina,
+            consulta.Tamano,
+            total,
+            totalPaginas,
+            totalUsuarios,
+            totalActivos,
+            totalUsuarios - totalActivos);
     }
 
     /// <summary>
