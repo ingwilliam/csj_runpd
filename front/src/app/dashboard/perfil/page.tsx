@@ -1,17 +1,22 @@
 import { Suspense } from "react";
-import { DashboardHeader } from "../dashboard-header";
+import type { Metadata } from "next";
+import { PageBreadcrumb } from "../page-breadcrumb";
 import { ProfileDetails } from "./profile-details";
+import { ProfileSkeleton } from "./profile-skeleton";
+
+export const metadata: Metadata = {
+  title: "Mi perfil | RUNPD",
+};
 
 /** Página "Mi perfil": datos de la sesión actual. */
 export default function ProfilePage() {
   return (
-    <main className="min-h-screen bg-slate-100">
-      <DashboardHeader />
-      <section className="p-6">
-        <Suspense fallback={null}>
-          <ProfileDetails />
-        </Suspense>
-      </section>
-    </main>
+    <div>
+      <PageBreadcrumb items={[{ label: "Mi perfil" }]} />
+
+      <Suspense fallback={<ProfileSkeleton />}>
+        <ProfileDetails />
+      </Suspense>
+    </div>
   );
 }

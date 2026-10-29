@@ -23,7 +23,7 @@ export function WelcomeBanner() {
           <Sparkles className="h-7 w-7" />
         </span>
         <div className="space-y-1">
-          <h2 className="text-2xl font-bold tracking-tight">¡Bienvenido al RUNPD!</h2>
+          <h1 className="text-2xl font-bold tracking-tight">¡Bienvenido al RUNPD!</h1>
           <p className="text-white/80">
             Has iniciado sesión correctamente. Elige un módulo para comenzar.
           </p>

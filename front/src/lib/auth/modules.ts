@@ -15,7 +15,7 @@ export const MODULES: AppModule[] = [
   {
     id: "usuarios",
     title: "Administración de usuarios",
-    description: "Consulta los usuarios, sus roles y su estado.",
+    description: "Administra los usuarios, sus roles y su estado.",
     href: "/dashboard/usuarios",
     roles: [ROLE_ADMINISTRADOR_DEL_SISTEMA],
   },

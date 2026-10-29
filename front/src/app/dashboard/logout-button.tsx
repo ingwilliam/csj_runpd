@@ -37,10 +37,12 @@ export function LogoutButton() {
         <Button
           variant="outline"
           disabled={isPending}
+          aria-label="Cerrar sesión"
+          title="Cerrar sesión"
           className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
         >
           <LogOut />
-          Cerrar sesión
+          <span className="hidden sm:inline">Cerrar sesión</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

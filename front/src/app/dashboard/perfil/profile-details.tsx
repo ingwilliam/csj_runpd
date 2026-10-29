@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { UserRound } from "lucide-react";
+import { RetryButton } from "@/components/retry-button";
 import { BackendError, getPerfilInBackend } from "@/lib/backend/client";
 import type { Perfil } from "@/lib/backend/types";
 import { getSession } from "@/lib/auth/session-claims";
@@ -33,15 +34,21 @@ export async function ProfileDetails() {
     const message =
       error instanceof BackendError ? error.message : "No se pudo cargar tu perfil. Intenta más tarde.";
     return (
-      <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
-        {message}
-      </p>
+      <div
+        role="alert"
+        className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700"
+      >
+        <p>{message}</p>
+        <div className="mt-4">
+          <RetryButton className="bg-red-600 text-white hover:bg-red-700" />
+        </div>
+      </div>
     );
   }
 
   // Paso 2: mostrar la cabecera del perfil y los formularios.
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="space-y-6">
       <ProfileHeader perfil={perfil} />
       <div className="grid gap-6 lg:grid-cols-2">
         <ProfileForm key={JSON.stringify(perfil)} perfil={perfil} />

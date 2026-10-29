@@ -4,6 +4,7 @@ import { SESSION_COOKIE_NAME } from "@/lib/auth/session";
 /** Datos de la sesión actual: el token para llamar al backend y los claims para la interfaz. */
 export type SessionData = {
   token: string;
+  usuarioId: string;
   correoElectronico: string;
   roles: string[];
 };
@@ -28,9 +29,11 @@ export async function getSession(): Promise<SessionData | null> {
  * Decodifica el payload de un JWT sin verificar su firma.
  * Solo sirve para decidir qué mostrar: el backend valida el token en cada petición.
  * @param token Token JWT completo (`encabezado.payload.firma`).
- * @returns Claims de correo y roles, o `null` si el payload no es válido.
+ * @returns Claims de identificador, correo y roles, o `null` si el payload no es válido.
  */
-function decodeSessionClaims(token: string): Pick<SessionData, "correoElectronico" | "roles"> | null {
+function decodeSessionClaims(
+  token: string,
+): Pick<SessionData, "usuarioId" | "correoElectronico" | "roles"> | null {
   const payloadSegment = token.split(".")[1];
   if (!payloadSegment) {
     return null;
@@ -49,6 +52,7 @@ function decodeSessionClaims(token: string): Pick<SessionData, "correoElectronic
   }
   const claims = payload as Record<string, unknown>;
   return {
+    usuarioId: typeof claims.sub === "string" ? claims.sub : "",
     correoElectronico: typeof claims.email === "string" ? claims.email : "",
     roles: toStringArray(claims.role),
   };
