@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLayoutEffect, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useAnimate, useReducedMotion, type Variants } from "motion/react";
@@ -16,6 +17,7 @@ const NETWORK_ERROR_MESSAGE = "No se pudo conectar con el servidor. Intenta de n
 // Tiempo que se muestra el estado de éxito antes de entrar al panel.
 const SUCCESS_REDIRECT_DELAY_MS = 900;
 const SHAKE_KEYFRAMES = [0, -8, 8, -6, 6, 0];
+const DESTINO_CONTRASENA_TEMPORAL = "/dashboard/perfil?contrasenaTemporal=1";
 
 const formVariants: Variants = {
   hidden: {},
@@ -79,10 +81,12 @@ export function LoginForm() {
         showError(await readErrorMessage(response));
         return;
       }
+      const body = (await response.json()) as { debeCambiarContrasena?: boolean };
       setIsLoading(false);
       setIsSuccess(true);
       await wait(SUCCESS_REDIRECT_DELAY_MS);
-      router.replace("/dashboard");
+      // Con contraseña temporal se lleva al perfil, donde se muestra el aviso para cambiarla.
+      router.replace(body.debeCambiarContrasena ? DESTINO_CONTRASENA_TEMPORAL : "/dashboard");
     } catch {
       // Los fallos de red se notifican con toast porque no dependen de los campos.
       toast.error(NETWORK_ERROR_MESSAGE);
@@ -186,6 +190,15 @@ export function LoginForm() {
             {mostrarContrasena ? <EyeOff /> : <Eye />}
           </Button>
         </div>
+      </motion.div>
+
+      <motion.div variants={fieldVariants} className="-mt-2 text-right">
+        <Link
+          href="/recuperar-contrasena"
+          className="text-sm font-medium text-corporativo-azul hover:underline"
+        >
+          ¿Olvidaste tu contraseña?
+        </Link>
       </motion.div>
 
       <motion.div variants={fieldVariants}>

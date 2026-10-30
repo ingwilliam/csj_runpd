@@ -10,6 +10,13 @@ export type LoginResponse = {
   tokenType: string;
   /** Fecha de expiración del token en formato ISO 8601 (UTC). */
   expiraUtc: string;
+  /** Indica que el usuario entró con una contraseña temporal y debe cambiarla. */
+  debeCambiarContrasena: boolean;
+};
+
+/** Cuerpo de POST /api/autenticacion/recuperar-contrasena. */
+export type RecuperarContrasenaRequest = {
+  correoElectronico: string;
 };
 
 /** Rol asignado a un usuario, tal como lo devuelve GET /api/usuarios. */

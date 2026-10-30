@@ -45,4 +45,22 @@ public sealed class AutenticacionController : ControllerBase
 
         return Ok(resultado);
     }
+
+    /// <summary>
+    /// Envía una contraseña temporal al correo de un usuario activo.
+    /// La respuesta es la misma exista o no el correo, para no revelar qué cuentas están registradas.
+    /// </summary>
+    /// <param name="solicitud">Correo electrónico de la cuenta.</param>
+    /// <param name="tokenCancelacion">Token para cancelar la operación.</param>
+    /// <returns>200 con un mensaje genérico, o 400 si el correo no es válido.</returns>
+    [HttpPost("recuperar-contrasena")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RecuperarContrasena(
+        RecuperarContrasenaRequest solicitud,
+        CancellationToken tokenCancelacion)
+    {
+        await _servicio.SolicitarRecuperacionAsync(solicitud, tokenCancelacion);
+        return Ok(new { mensaje = "Si el correo está registrado, recibirás una contraseña temporal en tu bandeja de entrada." });
+    }
 }

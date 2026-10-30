@@ -7,6 +7,7 @@ import type {
   LoginRequest,
   LoginResponse,
   Perfil,
+  RecuperarContrasenaRequest,
   Rol,
   Usuario,
   UsuariosPaginados,
@@ -25,6 +26,38 @@ export class BackendError extends Error {
     super(message);
     this.name = "BackendError";
   }
+}
+
+/**
+ * Solicita una contraseña temporal para el correo indicado. El backend responde igual
+ * exista o no el correo, así que el resultado no revela si la cuenta está registrada.
+ * @param datos Correo de la cuenta.
+ * @returns Mensaje genérico enviado por el backend.
+ * @throws {BackendError} Si el backend rechaza la solicitud (400) u otro error HTTP.
+ * @throws {Error} Si falta la variable de entorno API_URL o no hay conexión con el backend.
+ */
+export async function recuperarContrasenaInBackend(
+  datos: RecuperarContrasenaRequest,
+): Promise<string> {
+  const response = await fetch(`${getApiUrl()}/autenticacion/recuperar-contrasena`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(datos),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new BackendError(
+      response.status,
+      await getErrorMessage(response, "No se pudo procesar la solicitud. Intenta más tarde."),
+    );
+  }
+
+  const body = (await response.json()) as { mensaje?: unknown };
+  return typeof body.mensaje === "string" ? body.mensaje : "Revisa tu correo electrónico.";
 }
 
 /**

@@ -54,6 +54,10 @@ public sealed class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
             .HasColumnName("Activo")
             .IsRequired();
 
+        constructor.Property(usuario => usuario.DebeCambiarContrasena)
+            .HasColumnName("DebeCambiarContrasena")
+            .IsRequired();
+
         constructor.Property(usuario => usuario.FechaCreacionUtc)
             .HasColumnName("FechaCreacionUtc")
             .HasColumnType("datetime2")

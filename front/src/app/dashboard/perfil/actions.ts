@@ -1,12 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   actualizarPerfilInBackend,
   BackendError,
   cambiarContrasenaInBackend,
 } from "@/lib/backend/client";
+import { SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { getSession } from "@/lib/auth/session-claims";
 import {
   getActualizarPerfilValidationError,
@@ -59,7 +61,7 @@ export async function actualizarPerfilAction(
 
 /**
  * Cambia la contraseña del usuario de la sesión tras verificar la actual.
- * La sesión actual sigue activa hasta que venza su token.
+ * En éxito borra la cookie de sesión y redirige al login; en error devuelve el mensaje.
  */
 export async function cambiarContrasenaAction(
   _estadoPrevio: PerfilActionState,
@@ -91,7 +93,10 @@ export async function cambiarContrasenaAction(
     return manejarErrorAccion(error);
   }
 
-  return { ok: true, message: "Tu contraseña se cambió correctamente." };
+  // Paso 3: cerrar la sesión para que el usuario entre de nuevo con la contraseña nueva.
+  const cookieStore = await cookies();
+  cookieStore.delete(SESSION_COOKIE_NAME);
+  redirect("/login");
 }
 
 /**

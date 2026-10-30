@@ -87,6 +87,11 @@ public sealed class Usuario
     public DateTime FechaCreacionUtc { get; private set; }
 
     /// <summary>
+    /// Obtiene si el usuario debe cambiar su contrase\u00f1a al iniciar sesi\u00f3n, porque entr\u00f3 con una contrase\u00f1a temporal.
+    /// </summary>
+    public bool DebeCambiarContrasena { get; private set; }
+
+    /// <summary>
     /// Actualiza los datos editables del usuario. El estado activo solo se cambia con
     /// <see cref="EstablecerActivo"/> y la contraseña solo con <see cref="EstablecerContrasena"/>.
     /// </summary>
@@ -125,5 +130,14 @@ public sealed class Usuario
     public void EstablecerActivo(bool activo)
     {
         Activo = activo;
+    }
+
+    /// <summary>
+    /// Indica si el usuario debe cambiar su contrase\u00f1a en el siguiente inicio de sesi\u00f3n.
+    /// </summary>
+    /// <param name="debeCambiarContrasena">Nuevo valor de la bandera.</param>
+    public void EstablecerDebeCambiarContrasena(bool debeCambiarContrasena)
+    {
+        DebeCambiarContrasena = debeCambiarContrasena;
     }
 }

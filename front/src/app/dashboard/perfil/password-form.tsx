@@ -150,7 +150,7 @@ export function PasswordForm() {
           <AlertDialogHeader>
             <AlertDialogTitle>¿Cambiar tu contraseña?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tu sesión actual seguirá activa. Usa la nueva contraseña la próxima vez que inicies sesión.
+              Tu sesión se cerrará al cambiarla. Inicia sesión de nuevo con la contraseña nueva.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

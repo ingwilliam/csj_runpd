@@ -7,7 +7,7 @@ import type { LoginRequest } from "@/lib/backend/types";
 /**
  * POST /api/auth/login
  * Valida las credenciales, las envía al backend y guarda el token en una cookie httpOnly.
- * Responde 200 con `{ ok: true }`, o con `{ message }` y un código 400, 401, 502 o 503.
+ * Responde 200 con `{ ok: true, debeCambiarContrasena }`, o con `{ message }` y un código 400, 401, 502 o 503.
  */
 export async function POST(request: Request) {
   // Paso 1: leer el cuerpo; un JSON inválido se trata como solicitud incorrecta.
@@ -29,7 +29,10 @@ export async function POST(request: Request) {
   // Paso 3: autenticar y crear la sesión en una cookie que el navegador no puede leer.
   try {
     const session = await loginInBackend(credentials);
-    const response = NextResponse.json({ ok: true });
+    const response = NextResponse.json({
+      ok: true,
+      debeCambiarContrasena: session.debeCambiarContrasena,
+    });
     response.cookies.set({
       name: SESSION_COOKIE_NAME,
       value: session.accessToken,

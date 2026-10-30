@@ -104,6 +104,8 @@ public sealed class PerfilService
 
         // Paso 2: guardar el hash de la nueva contraseña.
         usuario.EstablecerContrasena(_hasherContrasena.HashPassword(usuario, solicitud.ContrasenaNueva));
+        // Paso 3: la contrase\u00f1a ya es personal, as\u00ed que deja de exigirse el cambio.
+        usuario.EstablecerDebeCambiarContrasena(false);
         await _contexto.SaveChangesAsync(tokenCancelacion);
         return new PerfilResultado(EstadoPerfil.Ok, usuario);
     }

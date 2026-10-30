@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Runpd.Api.Features.Autenticacion;
+using Runpd.Api.Features.Autenticacion.Correo;
 using Runpd.Api.Features.Perfil;
 using Runpd.Api.Features.Roles;
 using Runpd.Api.Features.Usuarios;
@@ -101,6 +102,32 @@ builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddScoped<RolesService>();
 builder.Services.AddScoped<UsuariosService>();
 builder.Services.AddScoped<PerfilService>();
+builder.Services.AddSingleton<GeneradorContrasenaTemporal>();
+builder.Services.AddScoped<IServicioCorreo, ServicioCorreoSmtp>();
+
+var smtpHost = builder.Configuration["SMTP_HOST"];
+var smtpPortValue = builder.Configuration["SMTP_PORT"];
+var smtpFrom = builder.Configuration["SMTP_FROM"];
+
+if (string.IsNullOrWhiteSpace(smtpHost) || string.IsNullOrWhiteSpace(smtpFrom))
+{
+    throw new InvalidOperationException(
+        "Configura SMTP_HOST y SMTP_FROM en el archivo .env local o en el entorno de ejecuci\u00f3n.");
+}
+
+if (!int.TryParse(smtpPortValue, out var smtpPort) || smtpPort is < 1 or > 65535)
+{
+    throw new InvalidOperationException("SMTP_PORT debe ser un puerto v\u00e1lido entre 1 y 65535.");
+}
+
+// SMTP_USER y SMTP_PASSWORD son opcionales: MailDev local no requiere autenticaci\u00f3n.
+builder.Services.AddSingleton(new SmtpSettings(
+    smtpHost,
+    smtpPort,
+    builder.Configuration["SMTP_USER"],
+    builder.Configuration["SMTP_PASSWORD"] ?? string.Empty,
+    smtpFrom,
+    builder.Configuration.GetValue<bool>("SMTP_ENABLE_SSL")));
 
 var app = builder.Build();
 
