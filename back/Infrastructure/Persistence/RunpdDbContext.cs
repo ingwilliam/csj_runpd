@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Runpd.Api.Features.Roles;
+using Runpd.Api.Features.TablasMaestras.ConsejosSeccionales;
+using Runpd.Api.Features.TablasMaestras.Departamentos;
+using Runpd.Api.Features.TablasMaestras.Municipios;
+using Runpd.Api.Features.TablasMaestras.DireccionesSeccionales;
 using Runpd.Api.Features.Usuarios;
 
 namespace Runpd.Api.Infrastructure.Persistence;
@@ -24,6 +28,26 @@ public sealed class RunpdDbContext(DbContextOptions<RunpdDbContext> options) : D
     /// Obtiene las asignaciones de roles a usuarios.
     /// </summary>
     public DbSet<UsuarioRol> UsuariosRoles => Set<UsuarioRol>();
+
+    /// <summary>
+    /// Obtiene los consejos seccionales del catálogo maestro.
+    /// </summary>
+    public DbSet<MaestraConsejoSeccional> MaestraConsejosSeccionales => Set<MaestraConsejoSeccional>();
+
+    /// <summary>
+    /// Obtiene las direcciones seccionales del catálogo maestro.
+    /// </summary>
+    public DbSet<MaestraDireccionSeccional> MaestraDireccionesSeccionales => Set<MaestraDireccionSeccional>();
+
+    /// <summary>
+    /// Obtiene los departamentos del catálogo maestro.
+    /// </summary>
+    public DbSet<MaestraDepartamento> MaestraDepartamentos => Set<MaestraDepartamento>();
+
+    /// <summary>
+    /// Obtiene los municipios del catálogo maestro.
+    /// </summary>
+    public DbSet<MaestraMunicipio> MaestraMunicipios => Set<MaestraMunicipio>();
 
     /// <summary>
     /// Aplica las configuraciones explícitas de las entidades.

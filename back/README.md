@@ -73,3 +73,17 @@ Un usuario puede tener varios roles. `POST` y `PUT/{id}` aceptan `roles` opciona
 Los roles se administran con `GET /api/roles`, `POST /api/roles` y `PATCH /api/roles/{id}/activo/{true|false}`. El catálogo del sistema es `Administrador del sistema`, `Administrador de la UDAE`, `Administrador del Consejo Seccional`, `Administrador del Despacho`, `Consulta` y `Reportes`; estos roles no pueden desactivarse. Un rol personalizado solo se desactiva si no tiene usuarios asignados.
 
 Todas las tablas de negocio incluyen `Activo` y `FechaCreacionUtc`; la tabla puente `UsuariosRoles` no los necesita porque asignar o quitar un rol es un `INSERT` o `DELETE`.
+
+## Tablas maestras
+
+Las tablas maestras son catálogos de solo consulta para usuarios autenticados. Cada una vive en su carpeta dentro de `Features/TablasMaestras/`.
+
+`MaestraConsejosSeccionales` guarda los consejos seccionales con `Id`, `Nombre`, `Activo` y `FechaCreacionUtc`. Al crearse, el registro queda activo. La migración `SembrarConsejosSeccionales` carga los 24 consejos seccionales con IDs fijos, porque otras tablas los referencian. La carga solo inserta los IDs que no existen, así que es segura en bases con datos previos. Al revertirla no se borran datos.
+
+`GET /api/maestras/consejos-seccionales` requiere un JWT válido (cualquier rol) y devuelve solo los consejos activos, ordenados por nombre, como lista simple: `[{ id, nombre, activo, fechaCreacionUtc }]`. Sin token responde `401`.
+
+`MaestraDepartamentos` guarda los departamentos con `Id`, `Nombre`, `CodigoDivpola` (DIVIPOLA, único y guardado como texto para conservar los ceros iniciales), `Activo` y `FechaCreacionUtc`. La migración `SembrarDepartamentos` carga los 33 registros (32 departamentos y Bogotá, D.C.) con IDs fijos y la misma regla de inserción segura. `GET /api/maestras/departamentos` requiere JWT (cualquier rol) y devuelve solo los activos, como lista simple con `codigoDivpola`.
+
+`MaestraMunicipios` guarda los municipios con `Id`, `Tipo`, `Pdet`, `Nombre`, `CodigoDivpola` (único), `DepartamentoId` (obligatorio), `ConsejoSeccionalId` y `DireccionSeccionalId` (opcionales), `Activo` y `FechaCreacionUtc`. La migración `SembrarMunicipios` carga por ahora solo 10 registros de prueba; la carga completa de 1122 municipios está pendiente. `GET /api/maestras/municipios?departamentoId={guid}` requiere JWT y devuelve los municipios activos del departamento, ordenados por nombre. Sin `departamentoId` responde `400`.
+
+`MaestraDireccionesSeccionales` sigue el mismo patrón. La migración `SembrarDireccionesSeccionales` carga las 23 direcciones seccionales con IDs fijos, con la misma regla de inserción segura y sin borrado al revertir. `GET /api/maestras/direcciones-seccionales` requiere JWT (cualquier rol) y devuelve solo las activas, como lista simple.

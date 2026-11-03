@@ -9,6 +9,10 @@ using Runpd.Api.Features.Autenticacion;
 using Runpd.Api.Features.Autenticacion.Correo;
 using Runpd.Api.Features.Perfil;
 using Runpd.Api.Features.Roles;
+using Runpd.Api.Features.TablasMaestras.ConsejosSeccionales;
+using Runpd.Api.Features.TablasMaestras.Departamentos;
+using Runpd.Api.Features.TablasMaestras.Municipios;
+using Runpd.Api.Features.TablasMaestras.DireccionesSeccionales;
 using Runpd.Api.Features.Usuarios;
 using Runpd.Api.Infrastructure.Persistence;
 
@@ -102,6 +106,10 @@ builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddScoped<RolesService>();
 builder.Services.AddScoped<UsuariosService>();
 builder.Services.AddScoped<PerfilService>();
+builder.Services.AddScoped<ConsejosSeccionalesService>();
+builder.Services.AddScoped<DireccionesSeccionalesService>();
+builder.Services.AddScoped<DepartamentosService>();
+builder.Services.AddScoped<MunicipiosService>();
 builder.Services.AddSingleton<GeneradorContrasenaTemporal>();
 builder.Services.AddScoped<IServicioCorreo, ServicioCorreoSmtp>();
 
