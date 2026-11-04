@@ -84,6 +84,33 @@ Las tablas maestras son catálogos de solo consulta para usuarios autenticados. 
 
 `MaestraDepartamentos` guarda los departamentos con `Id`, `Nombre`, `CodigoDivpola` (DIVIPOLA, único y guardado como texto para conservar los ceros iniciales), `Activo` y `FechaCreacionUtc`. La migración `SembrarDepartamentos` carga los 33 registros (32 departamentos y Bogotá, D.C.) con IDs fijos y la misma regla de inserción segura. `GET /api/maestras/departamentos` requiere JWT (cualquier rol) y devuelve solo los activos, como lista simple con `codigoDivpola`.
 
-`MaestraMunicipios` guarda los municipios con `Id`, `Tipo`, `Pdet`, `Nombre`, `CodigoDivpola` (único), `DepartamentoId` (obligatorio), `ConsejoSeccionalId` y `DireccionSeccionalId` (opcionales), `Activo` y `FechaCreacionUtc`. La migración `SembrarMunicipios` carga por ahora solo 10 registros de prueba; la carga completa de 1122 municipios está pendiente. `GET /api/maestras/municipios?departamentoId={guid}` requiere JWT y devuelve los municipios activos del departamento, ordenados por nombre. Sin `departamentoId` responde `400`.
+`MaestraMunicipios` guarda los municipios con `Id`, `Tipo`, `Pdet`, `Nombre`, `CodigoDivpola` (único), `DepartamentoId` (obligatorio), `ConsejoSeccionalId` y `DireccionSeccionalId` (opcionales), `Activo` y `FechaCreacionUtc`. La migración `SembrarMunicipios` carga los 1122 municipios con IDs fijos y la misma regla de inserción segura. `GET /api/maestras/municipios?departamentoId={guid}` requiere JWT y devuelve los municipios activos del departamento, ordenados por nombre. Sin `departamentoId` responde `400`.
+
+`MaestraJurisdicciones` guarda las jurisdicciones con `Id`, `Nombre`, `Funcion`, `Activo` y `FechaCreacionUtc`. La migración `SembrarJurisdicciones` carga las 5 jurisdicciones con IDs fijos y la misma regla de inserción segura. `GET /api/maestras/jurisdicciones` requiere JWT (cualquier rol) y devuelve solo las activas, ordenadas por nombre.
+
+`MaestraEntidades` guarda las entidades con `Id`, `Codigo`, `Nombre`, `JurisdiccionId` (obligatorio), `Activo` y `FechaCreacionUtc`. `JurisdiccionId` referencia a `MaestraJurisdicciones` con borrado restringido. La migración `SembrarEntidades` carga las 13 entidades con IDs fijos y la misma regla de inserción segura. `GET /api/maestras/entidades` requiere JWT (cualquier rol) y devuelve solo las activas, ordenadas por nombre.
 
 `MaestraDireccionesSeccionales` sigue el mismo patrón. La migración `SembrarDireccionesSeccionales` carga las 23 direcciones seccionales con IDs fijos, con la misma regla de inserción segura y sin borrado al revertir. `GET /api/maestras/direcciones-seccionales` requiere JWT (cualquier rol) y devuelve solo las activas, como lista simple.
+
+`MaestraEspecialidades` guarda las especialidades con `Id`, `Nombre`, `Descripcion` (opcional), `Activo` y `FechaCreacionUtc`. La migración `SembrarEspecialidades` carga las 4 especialidades (Civil, Familia, Laboral y Penal) con IDs fijos y la misma regla de inserción segura. `GET /api/maestras/especialidades` requiere JWT (cualquier rol) y devuelve solo las activas, ordenadas por nombre.
+
+`MaestraSubEspecialidades` guarda las sub especialidades con `Id`, `EspecialidadId` (opcional, referencia a `MaestraEspecialidades` con borrado restringido), `Nombre`, `Descripcion` (opcional), `Promiscuo`, `Codigo` (opcional y no único), `Activo` y `FechaCreacionUtc`. La migración `SembrarSubEspecialidades` carga las 40 sub especialidades con IDs fijos y la misma regla de inserción segura. `GET /api/maestras/sub-especialidades` requiere JWT (cualquier rol) y devuelve solo las activas, ordenadas por nombre.
+
+`MaestraDistritos` guarda los distritos con `Id`, `Nombre`, `JurisdiccionId` (obligatorio, referencia a `MaestraJurisdicciones` con borrado restringido), `SubEspecialidadId` (opcional, referencia a `MaestraSubEspecialidades` con borrado que deja la relación en nulo), `Activo` y `FechaCreacionUtc`. La migración `SembrarDistritos` carga los 169 distritos con IDs fijos y la misma regla de inserción segura. `GET /api/maestras/distritos` requiere JWT (cualquier rol) y devuelve solo los activos, ordenados por nombre.
+
+`MaestraCircuitos` guarda los circuitos con `Id`, `Nombre`, `DistritoId` (obligatorio, referencia a `MaestraDistritos` con borrado restringido), `SubEspecialidadId` (opcional, referencia a `MaestraSubEspecialidades` con borrado que deja la relación en nulo), `Activo` y `FechaCreacionUtc`. La migración `SembrarCircuitos` carga los 745 circuitos con IDs fijos y la misma regla de inserción segura. `GET /api/maestras/circuitos` requiere JWT (cualquier rol) y devuelve solo los activos, ordenados por nombre.
+
+## Despachos
+
+Los despachos son un módulo propio en `Features/Despachos/`, con CRUD y sin siembra de datos. La tabla `Despachos` tiene un índice único en `Codigo`, y sus relaciones apuntan a las tablas maestras: `MunicipioId` y `JurisdiccionId` son obligatorias; `EspecialidadId`, `SubEspecialidadId`, `DistritoId`, `CircuitoId`, `DistritoSubEspecialidadId`, `CircuitoSubEspecialidadId` y `EntidadId` son opcionales. `SubEspecialidadId` usa borrado que deja la relación en nulo; el resto restringe el borrado.
+
+El estado (`CREADO`, `MODIFICADO`, `TRASLADADO` o `SUPRIMIDO`) lo envía el front y el backend solo valida que sea uno de esos valores.
+
+Endpoints:
+- `GET /api/despachos`: lista paginada (`pagina`, `tamano`, `busqueda` por código o nombre, `estado` con `todos`, `activos` o `inactivos`). Roles: `Administrador de la UDAE`, `Consulta` y `Administrador del sistema`.
+- `GET /api/despachos/{id}`: mismos roles de lectura.
+- `POST /api/despachos`: crea un despacho (`201`). Solo `Administrador de la UDAE`.
+- `PUT /api/despachos/{id}`: actualiza los datos. Solo `Administrador de la UDAE`.
+- `PATCH /api/despachos/{id}/activo/{true|false}`: cambia solo `Activo`. Solo `Administrador de la UDAE`.
+
+Respuestas de error: `400` si una relación no existe o está inactiva, `404` si el despacho no existe y `409` si el código ya pertenece a otro despacho.

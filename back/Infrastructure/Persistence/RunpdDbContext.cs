@@ -1,9 +1,16 @@
 using Microsoft.EntityFrameworkCore;
+using Runpd.Api.Features.Despachos;
 using Runpd.Api.Features.Roles;
+using Runpd.Api.Features.TablasMaestras.Circuitos;
 using Runpd.Api.Features.TablasMaestras.ConsejosSeccionales;
 using Runpd.Api.Features.TablasMaestras.Departamentos;
 using Runpd.Api.Features.TablasMaestras.Municipios;
 using Runpd.Api.Features.TablasMaestras.DireccionesSeccionales;
+using Runpd.Api.Features.TablasMaestras.Distritos;
+using Runpd.Api.Features.TablasMaestras.Entidades;
+using Runpd.Api.Features.TablasMaestras.Especialidades;
+using Runpd.Api.Features.TablasMaestras.Jurisdicciones;
+using Runpd.Api.Features.TablasMaestras.SubEspecialidades;
 using Runpd.Api.Features.Usuarios;
 
 namespace Runpd.Api.Infrastructure.Persistence;
@@ -48,6 +55,41 @@ public sealed class RunpdDbContext(DbContextOptions<RunpdDbContext> options) : D
     /// Obtiene los municipios del catálogo maestro.
     /// </summary>
     public DbSet<MaestraMunicipio> MaestraMunicipios => Set<MaestraMunicipio>();
+
+    /// <summary>
+    /// Obtiene las jurisdicciones del catálogo maestro.
+    /// </summary>
+    public DbSet<MaestraJurisdiccion> MaestraJurisdicciones => Set<MaestraJurisdiccion>();
+
+    /// <summary>
+    /// Obtiene las entidades del catálogo maestro.
+    /// </summary>
+    public DbSet<MaestraEntidad> MaestraEntidades => Set<MaestraEntidad>();
+
+    /// <summary>
+    /// Obtiene las especialidades del catálogo maestro.
+    /// </summary>
+    public DbSet<MaestraEspecialidad> MaestraEspecialidades => Set<MaestraEspecialidad>();
+
+    /// <summary>
+    /// Obtiene las sub especialidades del catálogo maestro.
+    /// </summary>
+    public DbSet<MaestraSubEspecialidad> MaestraSubEspecialidades => Set<MaestraSubEspecialidad>();
+
+    /// <summary>
+    /// Obtiene los distritos del catálogo maestro.
+    /// </summary>
+    public DbSet<MaestraDistrito> MaestraDistritos => Set<MaestraDistrito>();
+
+    /// <summary>
+    /// Obtiene los circuitos del catálogo maestro.
+    /// </summary>
+    public DbSet<MaestraCircuito> MaestraCircuitos => Set<MaestraCircuito>();
+
+    /// <summary>
+    /// Obtiene los despachos administrados por la UDAE.
+    /// </summary>
+    public DbSet<Despacho> Despachos => Set<Despacho>();
 
     /// <summary>
     /// Aplica las configuraciones explícitas de las entidades.

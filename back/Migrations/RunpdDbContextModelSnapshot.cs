@@ -22,6 +22,134 @@ namespace Runpd.Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Runpd.Api.Features.Despachos.Despacho", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit")
+                        .HasColumnName("Activo");
+
+                    b.Property<Guid?>("CircuitoId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CircuitoId");
+
+                    b.Property<Guid?>("CircuitoSubEspecialidadId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CircuitoSubEspecialidadId");
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Codigo");
+
+                    b.Property<string>("ComplementoDireccion")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("ComplementoDireccion");
+
+                    b.Property<string>("Correo")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("Correo");
+
+                    b.Property<string>("Direccion")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Direccion");
+
+                    b.Property<Guid?>("DistritoId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DistritoId");
+
+                    b.Property<Guid?>("DistritoSubEspecialidadId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DistritoSubEspecialidadId");
+
+                    b.Property<Guid?>("EntidadId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("EntidadId");
+
+                    b.Property<Guid?>("EspecialidadId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("EspecialidadId");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)")
+                        .HasColumnName("Estado");
+
+                    b.Property<DateTime>("FechaCreacionUtc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("FechaCreacionUtc");
+
+                    b.Property<string>("HorarioAtencion")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("HorarioAtencion");
+
+                    b.Property<Guid>("JurisdiccionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("JurisdiccionId");
+
+                    b.Property<Guid>("MunicipioId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("MunicipioId");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("Nombre");
+
+                    b.Property<bool>("Promiscuo")
+                        .HasColumnType("bit")
+                        .HasColumnName("Promiscuo");
+
+                    b.Property<Guid?>("SubEspecialidadId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("SubEspecialidadId");
+
+                    b.Property<string>("TelefonoCelular")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("TelefonoCelular");
+
+                    b.Property<string>("TelefonoFijo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("TelefonoFijo");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CircuitoId");
+
+                    b.HasIndex("CircuitoSubEspecialidadId");
+
+                    b.HasIndex("Codigo")
+                        .IsUnique();
+
+                    b.HasIndex("DistritoId");
+
+                    b.HasIndex("DistritoSubEspecialidadId");
+
+                    b.HasIndex("EntidadId");
+
+                    b.HasIndex("EspecialidadId");
+
+                    b.HasIndex("JurisdiccionId");
+
+                    b.HasIndex("MunicipioId");
+
+                    b.HasIndex("SubEspecialidadId");
+
+                    b.ToTable("Despachos", (string)null);
+                });
+
             modelBuilder.Entity("Runpd.Api.Features.Roles.Rol", b =>
                 {
                     b.Property<Guid>("Id")
@@ -72,6 +200,43 @@ namespace Runpd.Api.Migrations
                         .HasDatabaseName("IX_UsuariosRoles_RolId");
 
                     b.ToTable("UsuariosRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.Circuitos.MaestraCircuito", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit")
+                        .HasColumnName("Activo");
+
+                    b.Property<Guid>("DistritoId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DistritoId");
+
+                    b.Property<DateTime>("FechaCreacionUtc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("FechaCreacionUtc");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("Nombre");
+
+                    b.Property<Guid?>("SubEspecialidadId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("SubEspecialidadId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistritoId");
+
+                    b.HasIndex("SubEspecialidadId");
+
+                    b.ToTable("MaestraCircuitos", (string)null);
                 });
 
             modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.ConsejosSeccionales.MaestraConsejoSeccional", b =>
@@ -160,6 +325,139 @@ namespace Runpd.Api.Migrations
                     b.ToTable("MaestraDireccionesSeccionales", (string)null);
                 });
 
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.Distritos.MaestraDistrito", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit")
+                        .HasColumnName("Activo");
+
+                    b.Property<DateTime>("FechaCreacionUtc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("FechaCreacionUtc");
+
+                    b.Property<Guid>("JurisdiccionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("JurisdiccionId");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("Nombre");
+
+                    b.Property<Guid?>("SubEspecialidadId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("SubEspecialidadId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JurisdiccionId");
+
+                    b.HasIndex("SubEspecialidadId");
+
+                    b.ToTable("MaestraDistritos", (string)null);
+                });
+
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.Entidades.MaestraEntidad", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit")
+                        .HasColumnName("Activo");
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("Codigo");
+
+                    b.Property<DateTime>("FechaCreacionUtc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("FechaCreacionUtc");
+
+                    b.Property<Guid>("JurisdiccionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("JurisdiccionId");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("Nombre");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JurisdiccionId");
+
+                    b.ToTable("MaestraEntidades", (string)null);
+                });
+
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.Especialidades.MaestraEspecialidad", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit")
+                        .HasColumnName("Activo");
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Descripcion");
+
+                    b.Property<DateTime>("FechaCreacionUtc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("FechaCreacionUtc");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("Nombre");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MaestraEspecialidades", (string)null);
+                });
+
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.Jurisdicciones.MaestraJurisdiccion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit")
+                        .HasColumnName("Activo");
+
+                    b.Property<DateTime>("FechaCreacionUtc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("FechaCreacionUtc");
+
+                    b.Property<bool>("Funcion")
+                        .HasColumnType("bit")
+                        .HasColumnName("Funcion");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("Nombre");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MaestraJurisdicciones", (string)null);
+                });
+
             modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.Municipios.MaestraMunicipio", b =>
                 {
                     b.Property<Guid>("Id")
@@ -224,6 +522,51 @@ namespace Runpd.Api.Migrations
                     b.ToTable("MaestraMunicipios", (string)null);
                 });
 
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.SubEspecialidades.MaestraSubEspecialidad", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit")
+                        .HasColumnName("Activo");
+
+                    b.Property<string>("Codigo")
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("Codigo");
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Descripcion");
+
+                    b.Property<Guid?>("EspecialidadId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("EspecialidadId");
+
+                    b.Property<DateTime>("FechaCreacionUtc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("FechaCreacionUtc");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("Nombre");
+
+                    b.Property<bool>("Promiscuo")
+                        .HasColumnType("bit")
+                        .HasColumnName("Promiscuo");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EspecialidadId");
+
+                    b.ToTable("MaestraSubEspecialidades", (string)null);
+                });
+
             modelBuilder.Entity("Runpd.Api.Features.Usuarios.Usuario", b =>
                 {
                     b.Property<Guid>("Id")
@@ -284,6 +627,56 @@ namespace Runpd.Api.Migrations
                     b.ToTable("Usuarios", (string)null);
                 });
 
+            modelBuilder.Entity("Runpd.Api.Features.Despachos.Despacho", b =>
+                {
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Circuitos.MaestraCircuito", null)
+                        .WithMany()
+                        .HasForeignKey("CircuitoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Circuitos.MaestraCircuito", null)
+                        .WithMany()
+                        .HasForeignKey("CircuitoSubEspecialidadId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Distritos.MaestraDistrito", null)
+                        .WithMany()
+                        .HasForeignKey("DistritoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Distritos.MaestraDistrito", null)
+                        .WithMany()
+                        .HasForeignKey("DistritoSubEspecialidadId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Entidades.MaestraEntidad", null)
+                        .WithMany()
+                        .HasForeignKey("EntidadId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Especialidades.MaestraEspecialidad", null)
+                        .WithMany()
+                        .HasForeignKey("EspecialidadId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Jurisdicciones.MaestraJurisdiccion", null)
+                        .WithMany()
+                        .HasForeignKey("JurisdiccionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Municipios.MaestraMunicipio", null)
+                        .WithMany()
+                        .HasForeignKey("MunicipioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.SubEspecialidades.MaestraSubEspecialidad", null)
+                        .WithMany()
+                        .HasForeignKey("SubEspecialidadId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
             modelBuilder.Entity("Runpd.Api.Features.Roles.UsuarioRol", b =>
                 {
                     b.HasOne("Runpd.Api.Features.Roles.Rol", "Rol")
@@ -303,6 +696,43 @@ namespace Runpd.Api.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.Circuitos.MaestraCircuito", b =>
+                {
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Distritos.MaestraDistrito", null)
+                        .WithMany()
+                        .HasForeignKey("DistritoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.SubEspecialidades.MaestraSubEspecialidad", null)
+                        .WithMany()
+                        .HasForeignKey("SubEspecialidadId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.Distritos.MaestraDistrito", b =>
+                {
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Jurisdicciones.MaestraJurisdiccion", null)
+                        .WithMany()
+                        .HasForeignKey("JurisdiccionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.SubEspecialidades.MaestraSubEspecialidad", null)
+                        .WithMany()
+                        .HasForeignKey("SubEspecialidadId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.Entidades.MaestraEntidad", b =>
+                {
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Jurisdicciones.MaestraJurisdiccion", null)
+                        .WithMany()
+                        .HasForeignKey("JurisdiccionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.Municipios.MaestraMunicipio", b =>
                 {
                     b.HasOne("Runpd.Api.Features.TablasMaestras.ConsejosSeccionales.MaestraConsejoSeccional", null)
@@ -320,6 +750,14 @@ namespace Runpd.Api.Migrations
                         .WithMany()
                         .HasForeignKey("DireccionSeccionalId")
                         .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.SubEspecialidades.MaestraSubEspecialidad", b =>
+                {
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Especialidades.MaestraEspecialidad", null)
+                        .WithMany()
+                        .HasForeignKey("EspecialidadId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Runpd.Api.Features.Roles.Rol", b =>
