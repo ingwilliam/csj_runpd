@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
-import { ArrowRight, Users, type LucideIcon } from "lucide-react";
+import { ArrowRight, Building2, Users, type LucideIcon } from "lucide-react";
 import type { AppModule } from "@/lib/auth/modules";
 
 /** Icono de cada módulo, indexado por `AppModule.id`. Vive en el cliente porque los iconos no se pasan desde el servidor. */
 const MODULE_ICONS: Record<string, LucideIcon> = {
   usuarios: Users,
+  despachos: Building2,
 };
 
 type ModuleCardProps = {

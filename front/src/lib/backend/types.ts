@@ -120,3 +120,164 @@ export type UsuariosPaginados = {
   /** Total de usuarios inactivos, sin filtros. */
   totalInactivos: number;
 };
+
+/** Estado funcional de un despacho, tal como lo exige el backend. */
+export type EstadoDespacho = "CREADO" | "MODIFICADO" | "TRASLADADO" | "SUPRIMIDO";
+
+/** Estado por el que se puede filtrar el listado de despachos. */
+export type EstadoFiltroDespachos = "todos" | "activos" | "inactivos";
+
+/** Parámetros de consulta de GET /api/despachos. */
+export type ListarDespachosParams = {
+  pagina?: number;
+  tamano?: number;
+  busqueda?: string;
+  estado?: EstadoFiltroDespachos;
+};
+
+/** Datos editables de un despacho, usados al crear y al actualizar. */
+export type DespachoDatos = {
+  codigo: string;
+  nombre: string;
+  estado: EstadoDespacho;
+  promiscuo: boolean;
+  direccion: string | null;
+  complementoDireccion: string | null;
+  telefonoFijo: string | null;
+  telefonoCelular: string | null;
+  correo: string | null;
+  horarioAtencion: string | null;
+  especialidadId: string | null;
+  subEspecialidadId: string | null;
+  municipioId: string;
+  jurisdiccionId: string;
+  distritoId: string | null;
+  circuitoId: string | null;
+  distritoSubEspecialidadId: string | null;
+  circuitoSubEspecialidadId: string | null;
+  entidadId: string | null;
+};
+
+/** Cuerpo de POST /api/despachos. */
+export type CrearDespachoRequest = DespachoDatos;
+
+/** Cuerpo de PUT /api/despachos/{id}. */
+export type ActualizarDespachoRequest = DespachoDatos;
+
+/** Despacho devuelto por GET /api/despachos. */
+export type Despacho = DespachoDatos & {
+  id: string;
+  activo: boolean;
+  /** Fecha de creación en formato ISO 8601 (UTC). */
+  fechaCreacionUtc: string;
+};
+
+/** Página de despachos devuelta por GET /api/despachos. */
+export type DespachosPaginados = {
+  items: Despacho[];
+  pagina: number;
+  tamano: number;
+  /** Despachos que cumplen la búsqueda y el filtro. */
+  total: number;
+  totalPaginas: number;
+  /** Total de despachos registrados, sin filtros. */
+  totalDespachos: number;
+  /** Total de despachos activos, sin filtros. */
+  totalActivos: number;
+  /** Total de despachos inactivos, sin filtros. */
+  totalInactivos: number;
+};
+
+/** Departamento del catálogo GET /api/maestras/departamentos. */
+export type Departamento = {
+  id: string;
+  nombre: string;
+  codigoDivpola: string;
+  activo: boolean;
+  fechaCreacionUtc: string;
+};
+
+/** Municipio del catálogo GET /api/maestras/municipios. */
+export type Municipio = {
+  id: string;
+  nombre: string;
+  tipo: string | null;
+  pdet: boolean;
+  codigoDivpola: string;
+  departamentoId: string;
+  consejoSeccionalId: string | null;
+  direccionSeccionalId: string | null;
+  activo: boolean;
+  fechaCreacionUtc: string;
+};
+
+/** Jurisdicción del catálogo GET /api/maestras/jurisdicciones. */
+export type Jurisdiccion = {
+  id: string;
+  nombre: string;
+  funcion: boolean;
+  activo: boolean;
+  fechaCreacionUtc: string;
+};
+
+/** Distrito del catálogo GET /api/maestras/distritos. */
+export type Distrito = {
+  id: string;
+  nombre: string;
+  jurisdiccionId: string;
+  subEspecialidadId: string | null;
+  activo: boolean;
+  fechaCreacionUtc: string;
+};
+
+/** Circuito del catálogo GET /api/maestras/circuitos. */
+export type Circuito = {
+  id: string;
+  nombre: string;
+  distritoId: string;
+  subEspecialidadId: string | null;
+  activo: boolean;
+  fechaCreacionUtc: string;
+};
+
+/** Especialidad del catálogo GET /api/maestras/especialidades. */
+export type Especialidad = {
+  id: string;
+  nombre: string;
+  descripcion: string | null;
+  activo: boolean;
+  fechaCreacionUtc: string;
+};
+
+/** Sub especialidad del catálogo GET /api/maestras/sub-especialidades. */
+export type SubEspecialidad = {
+  id: string;
+  especialidadId: string | null;
+  nombre: string;
+  descripcion: string | null;
+  promiscuo: boolean;
+  codigo: string | null;
+  activo: boolean;
+  fechaCreacionUtc: string;
+};
+
+/** Entidad del catálogo GET /api/maestras/entidades. */
+export type Entidad = {
+  id: string;
+  codigo: string;
+  nombre: string;
+  jurisdiccionId: string;
+  activo: boolean;
+  fechaCreacionUtc: string;
+};
+
+/** Catálogos maestros que alimentan el formulario y el detalle de despachos. */
+export type CatalogosDespachos = {
+  departamentos: Departamento[];
+  jurisdicciones: Jurisdiccion[];
+  distritos: Distrito[];
+  circuitos: Circuito[];
+  especialidades: Especialidad[];
+  subEspecialidades: SubEspecialidad[];
+  entidades: Entidad[];
+};

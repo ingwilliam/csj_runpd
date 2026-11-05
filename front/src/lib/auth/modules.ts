@@ -1,6 +1,12 @@
 /** Rol con acceso a la administración de usuarios; el backend exige el mismo rol en GET /api/usuarios. */
 export const ROLE_ADMINISTRADOR_DEL_SISTEMA = "Administrador del sistema";
 
+/** Rol que administra la UDAE y único autorizado a escribir despachos. */
+export const ROLE_ADMINISTRADOR_UDAE = "Administrador de la UDAE";
+
+/** Rol de solo lectura del sistema. */
+export const ROLE_CONSULTA = "Consulta";
+
 /** Módulo del panel visible para los usuarios que tengan alguno de sus roles. */
 export type AppModule = {
   id: string;
@@ -18,6 +24,13 @@ export const MODULES: AppModule[] = [
     description: "Administra los usuarios, sus roles y su estado.",
     href: "/dashboard/usuarios",
     roles: [ROLE_ADMINISTRADOR_DEL_SISTEMA],
+  },
+  {
+    id: "despachos",
+    title: "Administración de despachos",
+    description: "Consulta y administra los despachos judiciales registrados.",
+    href: "/dashboard/despachos",
+    roles: [ROLE_ADMINISTRADOR_UDAE, ROLE_CONSULTA, ROLE_ADMINISTRADOR_DEL_SISTEMA],
   },
 ];
 

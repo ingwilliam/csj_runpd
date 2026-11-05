@@ -1,14 +1,27 @@
 import type {
+  ActualizarDespachoRequest,
   ActualizarPerfilRequest,
   ActualizarUsuarioRequest,
   CambiarContrasenaRequest,
+  Circuito,
+  CrearDespachoRequest,
   CrearUsuarioRequest,
+  Departamento,
+  Despacho,
+  DespachosPaginados,
+  Distrito,
+  Entidad,
+  Especialidad,
+  Jurisdiccion,
+  ListarDespachosParams,
   ListarUsuariosParams,
   LoginRequest,
   LoginResponse,
+  Municipio,
   Perfil,
   RecuperarContrasenaRequest,
   Rol,
+  SubEspecialidad,
   Usuario,
   UsuariosPaginados,
 } from "@/lib/backend/types";
@@ -233,6 +246,216 @@ export async function listRolesInBackend(accessToken: string): Promise<Rol[]> {
 }
 
 /**
+ * Obtiene una página de despachos.
+ * @param accessToken Token de la sesión, enviado como Bearer.
+ * @param params Página, tamaño, búsqueda y estado solicitados.
+ * @returns La página de despachos y los totales del listado.
+ * @throws {BackendError} Si el backend responde con un error HTTP (400, 401, 403, etc.).
+ */
+export async function listDespachosInBackend(
+  accessToken: string,
+  params: ListarDespachosParams = {},
+): Promise<DespachosPaginados> {
+  const query = new URLSearchParams();
+  query.set("pagina", String(params.pagina ?? 1));
+  if (params.tamano !== undefined) {
+    query.set("tamano", String(params.tamano));
+  }
+  const busqueda = params.busqueda?.trim();
+  if (busqueda) {
+    query.set("busqueda", busqueda);
+  }
+  if (params.estado && params.estado !== "todos") {
+    query.set("estado", params.estado);
+  }
+
+  const response = await requestDespachos(accessToken, `?${query.toString()}`);
+  return (await response.json()) as DespachosPaginados;
+}
+
+/**
+ * Obtiene un despacho por su identificador.
+ * @param accessToken Token de la sesión, enviado como Bearer.
+ * @param id Identificador del despacho.
+ * @returns El despacho solicitado.
+ * @throws {BackendError} Si el backend responde con un error HTTP.
+ */
+export async function getDespachoInBackend(accessToken: string, id: string): Promise<Despacho> {
+  const response = await requestDespachos(accessToken, `/${encodeURIComponent(id)}`);
+  return (await response.json()) as Despacho;
+}
+
+/**
+ * Crea un despacho nuevo.
+ * @param accessToken Token de la sesión, enviado como Bearer.
+ * @param datos Datos del despacho.
+ * @returns El despacho creado.
+ * @throws {BackendError} Si una relación no es válida o el código ya existe.
+ */
+export async function createDespachoInBackend(
+  accessToken: string,
+  datos: CrearDespachoRequest,
+): Promise<Despacho> {
+  const response = await requestDespachos(accessToken, "", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
+  return (await response.json()) as Despacho;
+}
+
+/**
+ * Actualiza los datos de un despacho.
+ * @param accessToken Token de la sesión, enviado como Bearer.
+ * @param id Identificador del despacho.
+ * @param datos Datos nuevos del despacho.
+ * @returns El despacho actualizado.
+ * @throws {BackendError} Si el despacho no existe, una relación no es válida o el código está duplicado.
+ */
+export async function updateDespachoInBackend(
+  accessToken: string,
+  id: string,
+  datos: ActualizarDespachoRequest,
+): Promise<Despacho> {
+  const response = await requestDespachos(accessToken, `/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    body: JSON.stringify(datos),
+  });
+  return (await response.json()) as Despacho;
+}
+
+/**
+ * Activa o desactiva un despacho sin borrar su registro.
+ * @param accessToken Token de la sesión, enviado como Bearer.
+ * @param id Identificador del despacho.
+ * @param activo Nuevo estado activo.
+ * @returns El despacho actualizado.
+ * @throws {BackendError} Si el despacho no existe o el usuario no tiene permiso.
+ */
+export async function changeDespachoActivoInBackend(
+  accessToken: string,
+  id: string,
+  activo: boolean,
+): Promise<Despacho> {
+  const response = await requestDespachos(
+    accessToken,
+    `/${encodeURIComponent(id)}/activo/${activo}`,
+    { method: "PATCH" },
+  );
+  return (await response.json()) as Despacho;
+}
+
+/**
+ * Envía una petición a los endpoints de despachos y lanza `BackendError` si falla.
+ * @param accessToken Token de la sesión.
+ * @param subruta Sufijo de la ruta de despachos (por ejemplo "/{id}").
+ * @param init Opciones extra de la petición.
+ * @returns La respuesta exitosa.
+ */
+async function requestDespachos(
+  accessToken: string,
+  subruta: string,
+  init: Pick<RequestInit, "method" | "body"> = {},
+): Promise<Response> {
+  const response = await fetch(`${getApiUrl()}/despachos${subruta}`, {
+    ...init,
+    headers: {
+      Accept: "application/json",
+      ...(init.body === undefined ? {} : { "Content-Type": "application/json" }),
+      Authorization: `Bearer ${accessToken}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new BackendError(
+      response.status,
+      await getErrorMessage(response, "No se pudo completar la operación. Intenta más tarde.", {
+        forbidden: "No tienes permiso para administrar despachos.",
+        notFound: "No se encontró el despacho solicitado.",
+        conflict: "La operación no se puede completar con el estado actual del despacho.",
+      }),
+    );
+  }
+
+  return response;
+}
+
+/** Obtiene el catálogo de departamentos activos. */
+export async function listDepartamentosInBackend(accessToken: string): Promise<Departamento[]> {
+  return requestMaestra<Departamento[]>(accessToken, "/departamentos");
+}
+
+/** Obtiene los municipios activos de un departamento. */
+export async function listMunicipiosInBackend(
+  accessToken: string,
+  departamentoId: string,
+): Promise<Municipio[]> {
+  return requestMaestra<Municipio[]>(
+    accessToken,
+    `/municipios?departamentoId=${encodeURIComponent(departamentoId)}`,
+  );
+}
+
+/** Obtiene el catálogo de jurisdicciones activas. */
+export async function listJurisdiccionesInBackend(accessToken: string): Promise<Jurisdiccion[]> {
+  return requestMaestra<Jurisdiccion[]>(accessToken, "/jurisdicciones");
+}
+
+/** Obtiene el catálogo de distritos activos. */
+export async function listDistritosInBackend(accessToken: string): Promise<Distrito[]> {
+  return requestMaestra<Distrito[]>(accessToken, "/distritos");
+}
+
+/** Obtiene el catálogo de circuitos activos. */
+export async function listCircuitosInBackend(accessToken: string): Promise<Circuito[]> {
+  return requestMaestra<Circuito[]>(accessToken, "/circuitos");
+}
+
+/** Obtiene el catálogo de especialidades activas. */
+export async function listEspecialidadesInBackend(accessToken: string): Promise<Especialidad[]> {
+  return requestMaestra<Especialidad[]>(accessToken, "/especialidades");
+}
+
+/** Obtiene el catálogo de sub especialidades activas. */
+export async function listSubEspecialidadesInBackend(
+  accessToken: string,
+): Promise<SubEspecialidad[]> {
+  return requestMaestra<SubEspecialidad[]>(accessToken, "/sub-especialidades");
+}
+
+/** Obtiene el catálogo de entidades activas. */
+export async function listEntidadesInBackend(accessToken: string): Promise<Entidad[]> {
+  return requestMaestra<Entidad[]>(accessToken, "/entidades");
+}
+
+/**
+ * Envía una petición de lectura a los catálogos maestros.
+ * @param accessToken Token de la sesión.
+ * @param ruta Ruta dentro de /api/maestras (por ejemplo "/departamentos").
+ * @returns El catálogo deserializado.
+ */
+async function requestMaestra<T>(accessToken: string, ruta: string): Promise<T> {
+  const response = await fetch(`${getApiUrl()}/maestras${ruta}`, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new BackendError(
+      response.status,
+      await getErrorMessage(response, "No se pudieron cargar los catálogos. Intenta más tarde.", {
+        forbidden: "No tienes permiso para consultar los catálogos.",
+      }),
+    );
+  }
+
+  return (await response.json()) as T;
+}
+
+/**
  * Envía una petición a los endpoints de usuarios y lanza `BackendError` si falla.
  * @param accessToken Token de la sesión.
  * @param subruta Sufijo de la ruta de usuarios (por ejemplo "/{id}").
@@ -375,14 +598,26 @@ function getLoginErrorMessage(status: number): string {
   return "El servicio de autenticación no está disponible. Intenta más tarde.";
 }
 
+/** Mensajes alternativos para los códigos de error que dependen del recurso consultado. */
+type ErrorMessages = {
+  forbidden?: string;
+  notFound?: string;
+  conflict?: string;
+};
+
 /**
  * Obtiene el mensaje para el usuario de un error del backend.
  * Prioriza el `mensaje` enviado por la API y, si no existe, el primer error de validación.
  * @param response Respuesta no exitosa del backend.
  * @param fallback Mensaje genérico para errores sin detalle.
+ * @param messages Mensajes propios del recurso para 403, 404 y 409.
  * @returns Mensaje en español apto para la interfaz.
  */
-async function getErrorMessage(response: Response, fallback: string): Promise<string> {
+async function getErrorMessage(
+  response: Response,
+  fallback: string,
+  messages: ErrorMessages = {},
+): Promise<string> {
   if (response.status === 401) {
     return "Tu sesión expiró. Vuelve a iniciar sesión.";
   }
@@ -405,13 +640,15 @@ async function getErrorMessage(response: Response, fallback: string): Promise<st
     return "Los datos ingresados no son válidos.";
   }
   if (response.status === 403) {
-    return "No tienes permiso para administrar usuarios.";
+    return messages.forbidden ?? "No tienes permiso para administrar usuarios.";
   }
   if (response.status === 404) {
-    return "No se encontró el usuario solicitado.";
+    return messages.notFound ?? "No se encontró el usuario solicitado.";
   }
   if (response.status === 409) {
-    return "La operación no se puede completar con el estado actual del usuario.";
+    return (
+      messages.conflict ?? "La operación no se puede completar con el estado actual del usuario."
+    );
   }
   return fallback;
 }
