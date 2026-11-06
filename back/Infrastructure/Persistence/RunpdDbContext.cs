@@ -4,6 +4,7 @@ using Runpd.Api.Features.Roles;
 using Runpd.Api.Features.TablasMaestras.Circuitos;
 using Runpd.Api.Features.TablasMaestras.ConsejosSeccionales;
 using Runpd.Api.Features.TablasMaestras.Departamentos;
+using Runpd.Api.Features.TablasMaestras.DespachosClasificaciones;
 using Runpd.Api.Features.TablasMaestras.Municipios;
 using Runpd.Api.Features.TablasMaestras.DireccionesSeccionales;
 using Runpd.Api.Features.TablasMaestras.Distritos;
@@ -85,6 +86,11 @@ public sealed class RunpdDbContext(DbContextOptions<RunpdDbContext> options) : D
     /// Obtiene los circuitos del catálogo maestro.
     /// </summary>
     public DbSet<MaestraCircuito> MaestraCircuitos => Set<MaestraCircuito>();
+
+    /// <summary>
+    /// Obtiene las clasificaciones territoriales de los despachos.
+    /// </summary>
+    public DbSet<MaestraDespachoClasificacion> MaestraDespachosClasificaciones => Set<MaestraDespachoClasificacion>();
 
     /// <summary>
     /// Obtiene los despachos administrados por la UDAE.

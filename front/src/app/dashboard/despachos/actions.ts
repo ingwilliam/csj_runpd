@@ -9,6 +9,7 @@ import {
   getDespachoInBackend,
   listDepartamentosInBackend,
   listMunicipiosInBackend,
+  resolverTerritorioInBackend,
   updateDespachoInBackend,
 } from "@/lib/backend/client";
 import type {
@@ -16,6 +17,7 @@ import type {
   Despacho,
   EstadoDespacho,
   Municipio,
+  ResolverTerritorioResponse,
 } from "@/lib/backend/types";
 import {
   ROLE_ADMINISTRADOR_DEL_SISTEMA,
@@ -48,6 +50,18 @@ export type MunicipiosActionResult =
 export type MunicipioResueltoResult =
   | { ok: true; departamentoId: string; municipio: Municipio }
   | { ok: false; message: string };
+
+/** Resultado de resolver la clasificación territorial de un despacho. */
+export type TerritorioResueltoResult =
+  | { ok: true; territorio: ResolverTerritorioResponse }
+  | { ok: false; message: string };
+
+/** Parámetros para resolver la clasificación territorial de un despacho. */
+export type ResolverTerritorioParams = {
+  jurisdiccionId: string;
+  municipioId: string;
+  subEspecialidadId?: string | null;
+};
 
 const DEFAULT_ERROR_MESSAGE = "No se pudo completar la operación. Intenta más tarde.";
 const DESPACHOS_PATH = "/dashboard/despachos";
@@ -205,6 +219,47 @@ export async function obtenerMunicipiosAction(
 
     console.error("Error al consultar los municipios:", error);
     return { ok: false, message: "No se pudieron cargar los municipios." };
+  }
+}
+
+/**
+ * Resuelve la clasificación territorial general y específica de un despacho.
+ * @param params Jurisdicción y municipio obligatorios; subespecialidad opcional.
+ * @returns Las clasificaciones encontradas o un mensaje de error.
+ */
+export async function resolverTerritorioAction(
+  params: ResolverTerritorioParams,
+): Promise<TerritorioResueltoResult> {
+  const session = await getDespachosReadSession();
+  if (!esIdentificadorValido(params.jurisdiccionId)) {
+    return { ok: false, message: "La jurisdicción seleccionada no es válida." };
+  }
+  if (!esIdentificadorValido(params.municipioId)) {
+    return { ok: false, message: "El municipio seleccionado no es válido." };
+  }
+  if (params.subEspecialidadId && !esIdentificadorValido(params.subEspecialidadId)) {
+    return { ok: false, message: "La sub especialidad seleccionada no es válida." };
+  }
+
+  try {
+    return {
+      ok: true,
+      territorio: await resolverTerritorioInBackend(session.token, {
+        jurisdiccionId: params.jurisdiccionId,
+        municipioId: params.municipioId,
+        subEspecialidadId: params.subEspecialidadId ?? null,
+      }),
+    };
+  } catch (error) {
+    if (error instanceof BackendError && error.status === 401) {
+      redirect("/login");
+    }
+    if (error instanceof BackendError) {
+      return { ok: false, message: error.message };
+    }
+
+    console.error("Error al consultar la clasificación territorial:", error);
+    return { ok: false, message: "No se pudo consultar la clasificación territorial." };
   }
 }
 

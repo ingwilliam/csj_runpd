@@ -53,7 +53,12 @@ export function getDespachoValidationError(datos: DespachoDatos): string | null 
     return "El correo electrónico no tiene un formato válido.";
   }
 
-  // Paso 2: relaciones obligatorias.
+  // Paso 2: código de 12 dígitos generado automáticamente.
+  if (!/^\d{12}$/.test(datos.codigo)) {
+    return "El código del despacho debe tener exactamente 12 dígitos.";
+  }
+
+  // Paso 3: relaciones obligatorias.
   if (!esIdentificadorValido(datos.municipioId)) {
     return "Debes seleccionar un municipio.";
   }

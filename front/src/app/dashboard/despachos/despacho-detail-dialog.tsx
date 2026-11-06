@@ -181,10 +181,10 @@ export function DespachoDetailDialog({
                   detalle.circuitoSubEspecialidadId,
                 )}
               />
-              <DataItem
-                etiqueta="Entidad"
-                valor={nombreDe(catalogos.entidades, detalle.entidadId)}
-              />
+                <DataItem
+                  etiqueta="Tipo de despacho"
+                  valor={nombreDe(catalogos.entidades, detalle.entidadId)}
+                />
             </dl>
           </section>
 

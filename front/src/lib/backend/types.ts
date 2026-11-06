@@ -271,6 +271,27 @@ export type Entidad = {
   fechaCreacionUtc: string;
 };
 
+/**
+ * Clasificación territorial de un despacho.
+ * Devuelta por GET /api/maestras/despachos-clasificaciones/resolver-territorio.
+ */
+export type DespachoClasificacion = {
+  id: string;
+  jurisdiccionId: string;
+  municipioId: string;
+  subEspecialidadId: string | null;
+  distritoId: string;
+  circuitoId: string | null;
+  activo: boolean;
+  fechaCreacionUtc: string;
+};
+
+/** Respuesta de resolver la clasificación territorial general y específica. */
+export type ResolverTerritorioResponse = {
+  general: DespachoClasificacion | null;
+  especifico: DespachoClasificacion | null;
+};
+
 /** Catálogos maestros que alimentan el formulario y el detalle de despachos. */
 export type CatalogosDespachos = {
   departamentos: Departamento[];

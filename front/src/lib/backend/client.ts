@@ -20,6 +20,7 @@ import type {
   Municipio,
   Perfil,
   RecuperarContrasenaRequest,
+  ResolverTerritorioResponse,
   Rol,
   SubEspecialidad,
   Usuario,
@@ -429,12 +430,43 @@ export async function listEntidadesInBackend(accessToken: string): Promise<Entid
 }
 
 /**
+ * Resuelve la clasificación territorial general y específica de un despacho.
+ * @param accessToken Token de la sesión, enviado como Bearer.
+ * @param params Jurisdicción y municipio obligatorios; subespecialidad opcional.
+ * @returns Las clasificaciones general y específica encontradas.
+ * @throws {BackendError} Si el backend responde con un error HTTP.
+ */
+export async function resolverTerritorioInBackend(
+  accessToken: string,
+  params: { jurisdiccionId: string; municipioId: string; subEspecialidadId?: string | null },
+): Promise<ResolverTerritorioResponse> {
+  const query = new URLSearchParams({
+    jurisdiccionId: params.jurisdiccionId,
+    municipioId: params.municipioId,
+  });
+  if (params.subEspecialidadId) {
+    query.set("subEspecialidadId", params.subEspecialidadId);
+  }
+
+  return requestMaestra<ResolverTerritorioResponse>(
+    accessToken,
+    `/despachos-clasificaciones/resolver-territorio?${query.toString()}`,
+    "No se pudo consultar la clasificación territorial. Intenta más tarde.",
+  );
+}
+
+/**
  * Envía una petición de lectura a los catálogos maestros.
  * @param accessToken Token de la sesión.
  * @param ruta Ruta dentro de /api/maestras (por ejemplo "/departamentos").
+ * @param fallback Mensaje genérico para errores sin detalle del recurso.
  * @returns El catálogo deserializado.
  */
-async function requestMaestra<T>(accessToken: string, ruta: string): Promise<T> {
+async function requestMaestra<T>(
+  accessToken: string,
+  ruta: string,
+  fallback = "No se pudieron cargar los catálogos. Intenta más tarde.",
+): Promise<T> {
   const response = await fetch(`${getApiUrl()}/maestras${ruta}`, {
     headers: {
       Accept: "application/json",
@@ -446,7 +478,7 @@ async function requestMaestra<T>(accessToken: string, ruta: string): Promise<T> 
   if (!response.ok) {
     throw new BackendError(
       response.status,
-      await getErrorMessage(response, "No se pudieron cargar los catálogos. Intenta más tarde.", {
+      await getErrorMessage(response, fallback, {
         forbidden: "No tienes permiso para consultar los catálogos.",
       }),
     );

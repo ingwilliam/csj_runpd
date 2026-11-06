@@ -300,6 +300,57 @@ namespace Runpd.Api.Migrations
                     b.ToTable("MaestraDepartamentos", (string)null);
                 });
 
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.DespachosClasificaciones.MaestraDespachoClasificacion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit")
+                        .HasColumnName("Activo");
+
+                    b.Property<Guid?>("CircuitoId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CircuitoId");
+
+                    b.Property<Guid>("DistritoId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DistritoId");
+
+                    b.Property<DateTime>("FechaCreacionUtc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("FechaCreacionUtc");
+
+                    b.Property<Guid>("JurisdiccionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("JurisdiccionId");
+
+                    b.Property<Guid>("MunicipioId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("MunicipioId");
+
+                    b.Property<Guid?>("SubEspecialidadId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("SubEspecialidadId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CircuitoId");
+
+                    b.HasIndex("DistritoId");
+
+                    b.HasIndex("MunicipioId");
+
+                    b.HasIndex("SubEspecialidadId");
+
+                    b.HasIndex("JurisdiccionId", "MunicipioId", "SubEspecialidadId")
+                        .IsUnique()
+                        .HasFilter("[SubEspecialidadId] IS NOT NULL");
+
+                    b.ToTable("MaestraDespachosClasificaciones", (string)null);
+                });
+
             modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.DireccionesSeccionales.MaestraDireccionSeccional", b =>
                 {
                     b.Property<Guid>("Id")
@@ -701,6 +752,37 @@ namespace Runpd.Api.Migrations
                     b.HasOne("Runpd.Api.Features.TablasMaestras.Distritos.MaestraDistrito", null)
                         .WithMany()
                         .HasForeignKey("DistritoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.SubEspecialidades.MaestraSubEspecialidad", null)
+                        .WithMany()
+                        .HasForeignKey("SubEspecialidadId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Runpd.Api.Features.TablasMaestras.DespachosClasificaciones.MaestraDespachoClasificacion", b =>
+                {
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Circuitos.MaestraCircuito", null)
+                        .WithMany()
+                        .HasForeignKey("CircuitoId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Distritos.MaestraDistrito", null)
+                        .WithMany()
+                        .HasForeignKey("DistritoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Jurisdicciones.MaestraJurisdiccion", null)
+                        .WithMany()
+                        .HasForeignKey("JurisdiccionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Runpd.Api.Features.TablasMaestras.Municipios.MaestraMunicipio", null)
+                        .WithMany()
+                        .HasForeignKey("MunicipioId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
