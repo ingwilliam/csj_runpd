@@ -124,8 +124,11 @@ export type UsuariosPaginados = {
 /** Estado funcional de un despacho, tal como lo exige el backend. */
 export type EstadoDespacho = "CREADO" | "MODIFICADO" | "TRASLADADO" | "SUPRIMIDO";
 
-/** Estado por el que se puede filtrar el listado de despachos. */
-export type EstadoFiltroDespachos = "todos" | "activos" | "inactivos";
+/** Estado por el que se puede filtrar el listado de despachos.
+ * Cada categoría es mutuamente excluyente: un despacho suprimido no se cuenta
+ * ni en Permanentes ni en De Descongestión.
+ */
+export type EstadoFiltroDespachos = "todos" | "permanentes" | "descongestion" | "suprimidos";
 
 /** Parámetros de consulta de GET /api/despachos. */
 export type ListarDespachosParams = {
@@ -141,6 +144,7 @@ export type DespachoDatos = {
   nombre: string;
   estado: EstadoDespacho;
   promiscuo: boolean;
+  esDescongestion: boolean;
   direccion: string | null;
   complementoDireccion: string | null;
   telefonoFijo: string | null;
@@ -180,12 +184,14 @@ export type DespachosPaginados = {
   /** Despachos que cumplen la búsqueda y el filtro. */
   total: number;
   totalPaginas: number;
-  /** Total de despachos registrados, sin filtros. */
+  /** Total de despachos, sin filtros. */
   totalDespachos: number;
-  /** Total de despachos activos, sin filtros. */
-  totalActivos: number;
-  /** Total de despachos inactivos, sin filtros. */
-  totalInactivos: number;
+  /** Total de despachos activos y no de descongestión (permanentes), sin filtros. */
+  totalPermanentes: number;
+  /** Total de despachos activos y de descongestión, sin filtros. */
+  totalDescongestion: number;
+  /** Total de despachos inactivos (suprimidos), sin filtros. */
+  totalSuprimidos: number;
 };
 
 /** Departamento del catálogo GET /api/maestras/departamentos. */

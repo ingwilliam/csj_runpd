@@ -34,7 +34,7 @@ export function parseFiltrosDespachos(params: SearchParams): FiltrosDespachos {
   return {
     pagina: Number.isFinite(pagina) && pagina >= 1 ? Math.min(pagina, MAX_PAGINA) : 1,
     busqueda: busqueda.slice(0, MAX_BUSQUEDA),
-    estado: estado === "activos" || estado === "inactivos" ? estado : "todos",
+    estado: estado === "permanentes" || estado === "descongestion" || estado === "suprimidos" ? estado : "todos",
   };
 }
 

@@ -81,6 +81,9 @@ export function DespachoFormDialog({
   const [resolviendoMunicipio, setResolviendoMunicipio] = useState(esEdicion);
   const [jurisdiccionId, setJurisdiccionId] = useState(despacho?.jurisdiccionId ?? "");
   const [promiscuo, setPromiscuo] = useState(despacho?.promiscuo ?? false);
+  const [esDescongestion, setEsDescongestion] = useState(
+    despacho?.esDescongestion ?? false,
+  );
   const [distritoId, setDistritoId] = useState(despacho?.distritoId ?? "");
   const [circuitoId, setCircuitoId] = useState(despacho?.circuitoId ?? "");
   const [especialidadId, setEspecialidadId] = useState(despacho?.especialidadId ?? "");
@@ -796,6 +799,18 @@ export function DespachoFormDialog({
               </p>
             )}
           </section>
+
+          <Field label="Es un despacho de descongestión" htmlFor="despacho-esDescongestion">
+            <Checkbox
+              id="despacho-esDescongestion"
+              name="esDescongestion"
+              checked={esDescongestion}
+              onCheckedChange={(valor) => {
+                setEsDescongestion(valor === true);
+              }}
+              disabled={isPending}
+            />
+          </Field>
 
           <DialogFooter>
             <DialogClose asChild>

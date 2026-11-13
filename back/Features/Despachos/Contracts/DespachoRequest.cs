@@ -36,6 +36,11 @@ public sealed class DespachoRequest
     public bool Promiscuo { get; init; }
 
     /// <summary>
+    /// Obtiene o establece si el despacho es de descongestión. Por defecto es false.
+    /// </summary>
+    public bool EsDescongestion { get; init; } = false;
+
+    /// <summary>
     /// Obtiene o establece la dirección del despacho.
     /// </summary>
     [StringLength(255, ErrorMessage = "La dirección no puede superar los 255 caracteres.")]

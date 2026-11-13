@@ -17,6 +17,7 @@ public sealed class Despacho
     {
         Id = Guid.NewGuid();
         Activo = true;
+        EsDescongestion = false;
         FechaCreacionUtc = DateTime.UtcNow;
         CopiarDatos(datos);
     }
@@ -35,6 +36,11 @@ public sealed class Despacho
     /// Obtiene el nombre del despacho.
     /// </summary>
     public string Nombre { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Obtiene si el despacho es de descongestión.
+    /// </summary>
+    public bool EsDescongestion { get; private set; }
 
     /// <summary>
     /// Obtiene el estado del despacho enviado por el cliente: CREADO, MODIFICADO, TRASLADADO o SUPRIMIDO.
@@ -156,6 +162,7 @@ public sealed class Despacho
         Nombre = datos.Nombre;
         Estado = datos.Estado;
         Promiscuo = datos.Promiscuo;
+        EsDescongestion = datos.EsDescongestion;
         Direccion = datos.Direccion;
         ComplementoDireccion = datos.ComplementoDireccion;
         TelefonoFijo = datos.TelefonoFijo;

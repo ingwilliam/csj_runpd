@@ -66,8 +66,9 @@ export function DespachosManager({
     total,
     totalPaginas,
     totalDespachos,
-    totalActivos,
-    totalInactivos,
+    totalPermanentes,
+    totalDescongestion,
+    totalSuprimidos,
   } = resultado;
 
   const hayFiltro = busqueda.trim().length > 0 || estado !== "todos";
@@ -102,8 +103,9 @@ export function DespachosManager({
         busqueda={busqueda}
         estado={estado}
         totalDespachos={totalDespachos}
-        totalActivos={totalActivos}
-        totalInactivos={totalInactivos}
+        totalPermanentes={totalPermanentes}
+        totalDescongestion={totalDescongestion}
+        totalSuprimidos={totalSuprimidos}
         puedeEditar={puedeEditar}
         onNuevoDespacho={() => setDialogo({ tipo: "crear" })}
       />

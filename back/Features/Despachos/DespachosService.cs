@@ -35,15 +35,21 @@ public sealed class DespachosService
     {
         var consultaDespachos = _contexto.Despachos.AsNoTracking();
 
-        // Paso 1: filtrar por activos o inactivos.
-        if (consulta.Estado == EstadoDespachoFiltro.Activos)
+        // Paso 1: aplicar el filtro de estado seleccionado.
+        // Cada categoría es mutuamente excluyente.
+        if (consulta.Estado == EstadoDespachoFiltro.Permanentes)
         {
-            consultaDespachos = consultaDespachos.Where(despacho => despacho.Activo);
+            consultaDespachos = consultaDespachos.Where(despacho => despacho.Activo && !despacho.EsDescongestion);
         }
-        else if (consulta.Estado == EstadoDespachoFiltro.Inactivos)
+        else if (consulta.Estado == EstadoDespachoFiltro.Descongestion)
+        {
+            consultaDespachos = consultaDespachos.Where(despacho => despacho.Activo && despacho.EsDescongestion);
+        }
+        else if (consulta.Estado == EstadoDespachoFiltro.Suprimidos)
         {
             consultaDespachos = consultaDespachos.Where(despacho => !despacho.Activo);
         }
+        // "Todos" no aplica filtro adicional.
 
         // Paso 2: cada palabra debe coincidir con el código o el nombre.
         // La colación mantiene la búsqueda sin distinguir mayúsculas ni tildes.
@@ -61,10 +67,15 @@ public sealed class DespachosService
                 || EF.Functions.Collate(despacho.Nombre, CollationBusqueda).Contains(termino));
         }
 
-        // Paso 3: contar el resultado filtrado y los totales globales.
+        // Paso 3: contar el resultado filtrado y los 3 totales mutuamente excluyentes.
+        // Permanentes + De Descongestión + Suprimidos = TotalDespachos.
         var total = await consultaDespachos.CountAsync(tokenCancelacion);
         var totalDespachos = await _contexto.Despachos.CountAsync(tokenCancelacion);
-        var totalActivos = await _contexto.Despachos.CountAsync(despacho => despacho.Activo, tokenCancelacion);
+        var totalPermanentes = await _contexto.Despachos
+            .CountAsync(despacho => despacho.Activo && !despacho.EsDescongestion, tokenCancelacion);
+        var totalDescongestion = await _contexto.Despachos
+            .CountAsync(despacho => despacho.Activo && despacho.EsDescongestion, tokenCancelacion);
+        var totalSuprimidos = await _contexto.Despachos.CountAsync(despacho => !despacho.Activo, tokenCancelacion);
         var totalPaginas = total == 0
             ? 0
             : (int)Math.Ceiling(total / (double)consulta.Tamano);
@@ -84,8 +95,9 @@ public sealed class DespachosService
             total,
             totalPaginas,
             totalDespachos,
-            totalActivos,
-            totalDespachos - totalActivos);
+            totalPermanentes,
+            totalDescongestion,
+            totalSuprimidos);
     }
 
     /// <summary>
@@ -206,6 +218,7 @@ public sealed class DespachosService
             solicitud.Nombre.Trim(),
             solicitud.Estado,
             solicitud.Promiscuo,
+            solicitud.EsDescongestion,
             NormalizarTextoOpcional(solicitud.Direccion),
             NormalizarTextoOpcional(solicitud.ComplementoDireccion),
             NormalizarTextoOpcional(solicitud.TelefonoFijo),

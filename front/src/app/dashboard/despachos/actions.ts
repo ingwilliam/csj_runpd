@@ -350,6 +350,7 @@ function leerDespacho(formData: FormData): CrearDespachoRequest {
     nombre: leerTexto(formData, "nombre"),
     estado: leerTexto(formData, "estado") as EstadoDespacho,
     promiscuo: formData.get("promiscuo") === "on",
+    esDescongestion: formData.get("esDescongestion") === "on",
     direccion: leerTextoOpcional(formData, "direccion"),
     complementoDireccion: leerTextoOpcional(formData, "complementoDireccion"),
     telefonoFijo: leerTextoOpcional(formData, "telefonoFijo"),

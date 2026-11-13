@@ -73,6 +73,12 @@ namespace Runpd.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("EntidadId");
 
+                    b.Property<bool>("EsDescongestion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("EsDescongestion");
+
                     b.Property<Guid?>("EspecialidadId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("EspecialidadId");

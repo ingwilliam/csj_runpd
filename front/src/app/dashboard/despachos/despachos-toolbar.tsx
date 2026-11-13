@@ -12,8 +12,9 @@ type DespachosToolbarProps = {
   busqueda: string;
   estado: EstadoFiltroDespachos;
   totalDespachos: number;
-  totalActivos: number;
-  totalInactivos: number;
+  totalPermanentes: number;
+  totalDescongestion: number;
+  totalSuprimidos: number;
   puedeEditar: boolean;
   onNuevoDespacho: () => void;
 };
@@ -26,8 +27,9 @@ export function DespachosToolbar({
   busqueda,
   estado,
   totalDespachos,
-  totalActivos,
-  totalInactivos,
+  totalPermanentes,
+  totalDescongestion,
+  totalSuprimidos,
   puedeEditar,
   onNuevoDespacho,
 }: DespachosToolbarProps) {
@@ -90,9 +92,11 @@ export function DespachosToolbar({
             Administración de despachos
           </h1>
           <p className="text-sm text-slate-500">
-            {totalDespachos} despacho{totalDespachos === 1 ? "" : "s"} registrado
-            {totalDespachos === 1 ? "" : "s"} · {totalActivos} activo
-            {totalActivos === 1 ? "" : "s"}
+            {totalDespachos} despacho{totalDespachos === 1 ? "" : "s"}
+            {totalDespachos === 1 ? "" : "s"} · {totalPermanentes} Permanente
+            {totalPermanentes === 1 ? "" : "s"} · {totalDescongestion} De Descongestión
+            {totalDescongestion === 1 ? "" : "s"} · {totalSuprimidos} Suprimido
+            {totalSuprimidos === 1 ? "" : "s"}
           </p>
         </div>
 
@@ -144,16 +148,22 @@ export function DespachosToolbar({
           onClick={() => cambiarEstado("todos")}
         />
         <FilterButton
-          activo={estado === "activos"}
-          etiqueta="Activos"
-          cantidad={totalActivos}
-          onClick={() => cambiarEstado("activos")}
+          activo={estado === "permanentes"}
+          etiqueta="Permanentes"
+          cantidad={totalPermanentes}
+          onClick={() => cambiarEstado("permanentes")}
         />
         <FilterButton
-          activo={estado === "inactivos"}
-          etiqueta="Inactivos"
-          cantidad={totalInactivos}
-          onClick={() => cambiarEstado("inactivos")}
+          activo={estado === "descongestion"}
+          etiqueta="De Descongestión"
+          cantidad={totalDescongestion}
+          onClick={() => cambiarEstado("descongestion")}
+        />
+        <FilterButton
+          activo={estado === "suprimidos"}
+          etiqueta="Suprimidos"
+          cantidad={totalSuprimidos}
+          onClick={() => cambiarEstado("suprimidos")}
         />
       </div>
     </div>

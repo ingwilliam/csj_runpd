@@ -50,8 +50,9 @@ public sealed class DespachosController : ControllerBase
             resultado.Total,
             resultado.TotalPaginas,
             resultado.TotalDespachos,
-            resultado.TotalActivos,
-            resultado.TotalInactivos);
+            resultado.TotalPermanentes,
+            resultado.TotalDescongestion,
+            resultado.TotalSuprimidos);
 
         return Ok(respuesta);
     }
@@ -180,6 +181,7 @@ public sealed class DespachosController : ControllerBase
             despacho.Nombre,
             despacho.Estado,
             despacho.Promiscuo,
+            despacho.EsDescongestion,
             despacho.Direccion,
             despacho.ComplementoDireccion,
             despacho.TelefonoFijo,

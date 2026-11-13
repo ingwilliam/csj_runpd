@@ -21,15 +21,15 @@ export function DespachoEstadoBadge({ estado }: { estado: string }) {
   );
 }
 
-/** Indicador de estado activo o inactivo del despacho. */
+/** Indicador de estado del despacho: Registrado o Suprimido. */
 export function DespachoStatusBadge({ activo }: { activo: boolean }) {
   return activo ? (
     <span className="rounded-full bg-corporativo-verde/15 px-2.5 py-0.5 text-xs font-medium text-corporativo-verde">
-      Activo
+      Registrado
     </span>
   ) : (
     <span className="rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600">
-      Inactivo
+      Suprimido
     </span>
   );
 }

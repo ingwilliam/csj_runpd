@@ -7,8 +7,9 @@ namespace Runpd.Api.Features.Despachos.Contracts;
 /// <param name="Codigo">Código único del despacho.</param>
 /// <param name="Nombre">Nombre del despacho.</param>
 /// <param name="Estado">Estado del despacho.</param>
-/// <param name="Promiscuo">Indica si el despacho es promiscuo.</param>
-/// <param name="Direccion">Dirección del despacho, si tiene.</param>
+    /// <param name="Promiscuo">Indica si el despacho es promiscuo.</param>
+    /// <param name="EsDescongestion">Indica si el despacho es de descongestión.</param>
+    /// <param name="Direccion">Dirección del despacho, si tiene.</param>
 /// <param name="ComplementoDireccion">Complemento de la dirección, si tiene.</param>
 /// <param name="TelefonoFijo">Teléfono fijo, si tiene.</param>
 /// <param name="TelefonoCelular">Teléfono celular, si tiene.</param>
@@ -31,6 +32,7 @@ public sealed record DespachoResponse(
     string Nombre,
     string Estado,
     bool Promiscuo,
+    bool EsDescongestion,
     string? Direccion,
     string? ComplementoDireccion,
     string? TelefonoFijo,

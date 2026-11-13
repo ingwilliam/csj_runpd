@@ -53,6 +53,11 @@ public sealed class DespachoConfiguration : IEntityTypeConfiguration<Despacho>
             .HasColumnName("Promiscuo")
             .IsRequired();
 
+        constructor.Property(despacho => despacho.EsDescongestion)
+            .HasColumnName("EsDescongestion")
+            .IsRequired()
+            .HasDefaultValue(false);
+
         constructor.Property(despacho => despacho.Direccion)
             .HasColumnName("Direccion")
             .HasMaxLength(255);
